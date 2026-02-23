@@ -1,0 +1,122 @@
+# ==========================================================
+# logging YAML設定ファイル（dictConfig用）
+# RotatingFileHandler / TimedRotatingFileHandler 使用版
+# ==========================================================
+# logging.config.dictConfig() で読み込みます。
+#
+# この設定では
+# ・サイズで分割するログ
+# ・時間で分割するログ
+# の2種類を使用します。
+# ==========================================================
+
+
+# ==========================================================
+# ■ 設定バージョン（必ず 1）
+# ==========================================================
+version: 1
+
+
+# ==========================================================
+# ■ Formatter（ログの見た目）
+# ==========================================================
+formatters:
+  simple:
+
+    # 各項目の意味
+    # %(asctime)s   → ログ出力時間
+    # %(name)s      → ロガー名
+    # %(levelname)s → ログレベル
+    # %(message)s   → メッセージ本文
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+
+# ==========================================================
+# ■ Handler（ログの出力先）
+# ==========================================================
+handlers:
+
+  # --------------------------------------------------------
+  # ① サイズで分割するログ
+  # --------------------------------------------------------
+  rotating_handler:
+
+    # サイズでローテーションするクラス
+    class: logging.handlers.RotatingFileHandler
+
+    # INFO以上のみ出力
+    level: INFO
+
+    formatter: simple
+
+    # 保存ファイル名
+    filename: logs/rotation_yaml.log
+
+    # 最大サイズ（バイト）
+    maxBytes: 1000
+
+    # 保存する世代数（最大5個）
+    backupCount: 5
+
+    # 文字コード
+    encoding: utf-8
+
+
+  # --------------------------------------------------------
+  # ② 時間で分割するログ
+  # --------------------------------------------------------
+  timed_rotating_handler:
+
+    # 時間でローテーションするクラス
+    class: logging.handlers.TimedRotatingFileHandler
+
+    # INFO以上のみ出力
+    level: INFO
+
+    formatter: simple
+
+    # 保存ファイル名
+    filename: logs/timed_rotating_yaml.log
+
+    # ローテーション単位
+    # s = 秒
+    # m = 分
+    # h = 時間
+    # d = 日
+    when: s
+
+    # 何単位ごとに分割するか
+    interval: 4
+
+    # 保存世代数
+    backupCount: 5
+
+    encoding: utf-8
+
+
+# ==========================================================
+# ■ Logger設定
+# ==========================================================
+loggers:
+  sampleLogger:
+
+    # DEBUG以上を処理対象にする
+    level: DEBUG
+
+    # 使用するHandler
+    handlers: [rotating_handler, timed_rotating_handler]
+
+    # rootへログを渡さない（重複防止）
+    propagate: false
+
+
+# ==========================================================
+# ■ rootロガー設定
+# ==========================================================
+root:
+
+  # WARNING以上のみ処理
+  level: WARNING
+
+  # 出力先
+  handlers: [rotating_handler, timed_rotating_handler]
